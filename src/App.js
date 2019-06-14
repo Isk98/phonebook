@@ -1,26 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react'
+import Filter from './Components/Filter'
+import Form from './Components/Form'
+import People from './Components/People'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+  const [ people, setPeople] = useState([
+    { name: 'Arto Hellas', number: '040-123456' },
+    { name: 'Ada Lovelace', number: '39-44-5323523' },
+    { name: 'Dan Abramov', number: '12-43-234345' },
+    { name: 'Mary Poppendieck', number: '39-23-6423122' }
+  
+  ]) 
+  
+  const [ newName, setNewName ] = useState('')
+  const [ newNumber, setNewNumber ] = useState('')
+  const [searchedValue,setSearchedValue] = useState([])
+  
+
+ 
+
+ 
+
+
+  const handleSearch=(e)=> {
+    // Variable to hold the original version of the list
+let currentList = []
+    // Variable to hold the filtered list before putting into state
+let newList = []
+if (e.target.value !== "") {
+         currentList = people
+newList = currentList.filter(item => {
+            const lc = item.toLowerCase()
+             const filter = e.target.value.toLowerCase()
+             return lc.includes(filter)
+  });
+} else {
+        // If the search bar is empty, set newList to original task list
+  newList = people
+}
+setSearchedValue(newList)
+    // Set the filtered state based on what our rules added to newList
+
 }
 
-export default App;
+
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter searchedValue={searchedValue} handleSearch={handleSearch}/>
+      <Form newName={newName} 
+           newNumber={newNumber} 
+           setNewNumber={setNewNumber}
+           setNewName={setNewName}
+           people={people}
+           setPeople={setPeople}/>
+        
+       <h2>Numbers</h2>
+     <People people={people}/>
+      
+    </div>
+  )
+}
+
+export default App
