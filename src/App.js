@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Filter from "./Components/Filter";
 import Form from "./Components/Form";
 import People from "./Components/People";
+import personsServices from "./Services/personsServices";
 
 const App = () => {
-  const [people, setPeople] = useState([
-    { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" }
-  ]);
-
+  const [people, setPeople] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchedValue, setSearchedValue] = useState([]);
+
+  useEffect(() => {
+    personsServices.getAll().then(response => {
+      setPeople(response.data);
+    });
+  }, []);
 
   const handleNameChange = event => {
     setNewName(event.target.value);
@@ -28,13 +29,15 @@ const App = () => {
       name: newName,
       number: newNumber
     };
-    setPeople(
-      people.find(person => person.name === newName)
-        ? alert(`${newName} is already added to phonebook`)
-        : people.concat(personObject)
-    );
-    setNewName("");
-    setNewNumber("");
+    personsServices.create(personObject).then(response => {
+      setPeople(
+        people.find(person => person.name === newName)
+          ? alert(`${newName} is already added to phonebook`)
+          : people.concat(personObject)
+      );
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   const handleSearch = e => {
@@ -56,6 +59,20 @@ const App = () => {
     setSearchedValue(newList);
   };
 
+  const deletePerson = id => {
+    personsServices.remove(id);
+    setPeople(people.filter(p => p.id !== id));
+  };
+  const rows = () =>
+    people.map(person => (
+      <People
+        key={person.id}
+        name={person.name}
+        number={person.number}
+        deletePerson={() => deletePerson(person.id)}
+      />
+    ));
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -70,7 +87,7 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <People people={people} />
+      <ul>{rows()}</ul>
     </div>
   );
 };

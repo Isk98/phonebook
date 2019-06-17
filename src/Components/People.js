@@ -1,13 +1,14 @@
 import React from "react";
 
 const People = props => {
-  const rows = () =>
-    props.people.map(person => (
-      <li key={person.name}>
-        {person.name} {person.number}
+  return (
+    <div>
+      <li>
+        {props.name} {props.number}{" "}
       </li>
-    ));
-  return <ul>{rows()}</ul>;
+      <button onClick={props.deletePerson}>Delete </button>
+    </div>
+  );
 };
 
 export default People;
